@@ -1,14 +1,15 @@
 import os
 import discord
 from discord.ext import commands
-from discord.ext.commands import bot
 from dotenv import load_dotenv
 import random
-
+import chess
+import pygame
+from chessGame import chessGame
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 client = discord.Client()
-
+chessChannels = []
 
 class Media:
     def __init__(self):
@@ -22,7 +23,7 @@ class Media:
 media = Media()
 client = commands.Bot(command_prefix="!")
 
-
+chessOn = False
 @client.event
 async def on_ready():
     print(f" {client.user} has successfully connected to discord")
@@ -39,6 +40,43 @@ async def roulette(msg):
 @client.command(pass_context=True)
 async def online(msg):
     await msg.channel.send(" I am online!")
+
+
+@client.command(pass_context=True)
+async def chess_start(cxt):
+    channelid = cxt.channel.id
+    if channelid in chessChannels:
+        cxt.channel.send("Chess has already been initialised here!")
+        pass
+
+    else:
+        chessChannels.append(channelid)
+        await cxt.channel.send("Starting up the chess game")
+        print("Chess game is initialised")
+        gameEngine = chessGame()
+        gameEngine.loadImages()
+        gameEngine.createImage()
+        await cxt.channel.send(file=discord.File("chessImages/board.png"))
+
+        @client.command(pass_context=True)
+        async def legal(msg):
+            moves = gameEngine.legalMoves()
+            await msg.channel.send(moves)
+
+        @client.command(pass_context=True)
+        async def move(cxt, *, playerMove):
+            moves = gameEngine.legalMoves()
+            if playerMove not in moves:
+                await cxt.channel.send("That move is not legal!")
+
+            else:
+                gameEngine.makeMove(playerMove)
+                gameEngine.createImage()
+                await cxt.channel.send(file=discord.File("chessImages/board.png"))
+
+
+
+
 
 
 client.run(TOKEN)
