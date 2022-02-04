@@ -190,4 +190,10 @@ async def chess_start(cxt):
                 await cxt.channel.send(file=discord.File("chessImages/board.png"))
 
 
+@client.command(pass_context=True)
+async def jake(ctx, *args):
+    message = ""
+    for words in args:
+        message = (words[0]+"-")*random.randint(1, 4) + words
+    await ctx.channel.send(message)
 client.run(TOKEN)
