@@ -3,9 +3,10 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import random
-import chess
-import pygame
 from chessGame import chessGame
+import uuid
+import requests
+import shutil
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -46,6 +47,12 @@ class Media:
 
         return images
 
+    def saveImage(self, r, name, id):
+        path = self.path + str(id) + "-rouletteImages/"
+        with open((path + name), 'wb') as destination:
+            print(f"Saving image with name {name} to path {destination}")
+            shutil.copyfileobj(r.raw, destination)
+
 
 media = Media()
 client = commands.Bot(command_prefix="!")
@@ -82,6 +89,23 @@ async def roulette_free(cxt):
 
 
 @client.command(pass_context=True)
+async def roulette_upload(ctx):
+    try:
+        url = ctx.message.attachments[0].url
+
+    except IndexError:
+        print("Unrecognised attachment")
+        await ctx.channel.send("Either there is no attachment, or it is not recognised")
+
+    else:
+        if url[0:26] == "https://cdn.discordapp.com":
+            r = requests.get(url, stream=True)
+            imageName = str(uuid.uuid4()) + '.jpg'
+            media.saveImage(r, imageName, ctx.guild.id)
+            await ctx.channel.send("Your image has been saved to the roulette pool!")
+
+
+@client.command(pass_context=True)
 async def roulette(cxt):
     try:
         rouletteFreeSend[cxt.guild.id]
@@ -100,7 +124,7 @@ async def roulette(cxt):
             print(f"Roulette image sent to channel {cxt.channel.name}")
 
         else:
-            await cxt.channel.send("This server has no roulette images, please use !roulette_image and an image"
+            await cxt.channel.send("This server has no roulette images, please use !roulette_upload and an image"
                                    " within the same message to upload some!")
 
     if not rouletteFreeSend[cxt.guild.id]:  # if cannot send anywhere
@@ -111,7 +135,7 @@ async def roulette(cxt):
                 print(f"Roulette image sent to channel {cxt.channel.name}")
 
             else:
-                await cxt.channel.send("This server has no roulette images, please use !roulette_image and an image"
+                await cxt.channel.send("This server has no roulette images, please use !roulette_upload and an image"
                                        " within the same message to upload some!")
         else:
             channelExist = False
