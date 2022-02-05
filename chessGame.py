@@ -1,5 +1,6 @@
 import pygame as py
 import chess
+import discord
 
 
 # some of the following code is taken from the chess minimax project
@@ -68,6 +69,29 @@ class chessGame:
 
         py.image.save(self.screen, "chessImages/board.png")
 
+    def updateBoard(self):
+        count = 0
+        self.screen.fill(self.white)
+        for n in range(8):
+            for j in range(8):
+                if count % 2 == 0:
+                    py.draw.rect(self.screen, self.white, [self.SQDI * j, self.SQDI * n, self.SQDI, self.SQDI])
+                    count += 1
+
+                else:
+                    py.draw.rect(self.screen, self.black, [self.SQDI * j, self.SQDI * n, self.SQDI, self.SQDI])
+                    count += 1
+            count += 1
+
+        for m in range(8):
+            for j in range(1, 9):
+                if self.board.piece_at(int(j + m * 8 - 1)) is not None:
+                    self.screen.blit(self.IMAGES[str(self.board.piece_at((j + m * 8) - 1))], (
+                        self.SQDI * j - (self.WIDTH / 8), ((self.WIDTH / 8 * 7) - self.SQDI * m)))
+                    # uses i and j values to work out which piece it has, and where it should go
+
+        py.image.save(self.screen, "chessImages/board.png")
+
     def legalMoves(self):
         lmoves = []
         for moves in self.board.legal_moves:
@@ -77,5 +101,5 @@ class chessGame:
     def makeMove(self, playerMove):
         self.board.push_uci(playerMove)
 
-
-
+    def resetBoard(self):
+        self.board = chess.Board()

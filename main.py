@@ -11,7 +11,8 @@ import shutil
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 client = discord.Client()
-chessChannels = []
+chessGameObject = {}
+chessGameExist = {}
 
 
 class Media:
@@ -23,7 +24,6 @@ class Media:
 
         except:
             pass
-
 
     def createDir(self, id):
         imageDir = self.path + str(id) + "-rouletteImages"
@@ -166,42 +166,52 @@ async def online(msg):
 @client.command(pass_context=True)
 async def chess_start(cxt):
     channelid = cxt.channel.id
-    if channelid in chessChannels:
-        cxt.channel.send("Chess has already been initialised here!")
-        pass
+    try:
+        chessGameObject[channelid]
+        await cxt.channel.send("You already have a chess game in this channel!")
 
-    else:
-        chessChannels.append(channelid)
-        await cxt.channel.send("Starting up the chess game")
-        print("Chess game is initialised")
-        gameEngine = chessGame()
-        gameEngine.loadImages()
-        gameEngine.createImage()
+    except KeyError:
+        chessGameExist[channelid] = True
+        chessGameObject[channelid] = chessGame()
+        await cxt.channel.send("Starting up the chess game!")
+        print(f"Chess game init at id {channelid}")
+        chessGameObject[channelid].updateBoard()
         await cxt.channel.send(file=discord.File("chessImages/board.png"))
 
-        @client.command(pass_context=True)
-        async def legal(msg):
-            moves = gameEngine.legalMoves()
-            await msg.channel.send(moves)
 
-        @client.command(pass_context=True)
-        async def move(cxt, *, playerMove):
-            moves = gameEngine.legalMoves()
-            if playerMove not in moves:
-                await cxt.channel.send("That move is not legal!")
+@client.command(pass_context=True)
+async def legal(ctx):
+    if chessGameExist[ctx.channel.id]:
+        moves = chessGameObject[ctx.channel.id].legalMoves()
+        await ctx.channel.send(moves)
 
-            else:
-                gameEngine.makeMove(playerMove)
-                gameEngine.createImage()
-                await cxt.channel.send(file=discord.File("chessImages/board.png"))
+    else:
+        await ctx.channel.send("Please start a chess game in this channel with !chess_start")
+
+
+@client.command(pass_context=True)
+async def move(ctx, *, playerMove):
+    if chessGameExist[ctx.channel.id]:
+        moves = chessGameObject[ctx.channel.id].legalMoves()
+        if playerMove not in moves:
+            await ctx.channel.send("That move is not legal!")
+
+        else:
+            chessGameObject[ctx.channel.id].makeMove(playerMove)
+            chessGameObject[ctx.channel.id].updateBoard()
+            await ctx.channel.send(file=discord.File("chessImages/board.png"))
+
+    else:
+        await ctx.channel.send("There is no game in this channel, please user !chess_start to make one!")
 
 
 @client.command(pass_context=True)
 async def jake(ctx, *args):
     message = ""
     for words in args:
-        message = (words[0]+"-")*random.randint(1, 4) + words
+        message = (words[0] + "-") * random.randint(1, 4) + words
     await ctx.channel.send(message)
+
 
 if __name__ == "__main__":
     client.run(TOKEN)
