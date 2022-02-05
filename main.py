@@ -18,6 +18,12 @@ class Media:
     def __init__(self):
         self.path = "rouletteImages/"
         self.safePath = "rouletteImages"
+        try:
+            os.makedirs(self.path)
+
+        except:
+            pass
+
 
     def createDir(self, id):
         imageDir = self.path + str(id) + "-rouletteImages"
@@ -196,4 +202,6 @@ async def jake(ctx, *args):
     for words in args:
         message = (words[0]+"-")*random.randint(1, 4) + words
     await ctx.channel.send(message)
-client.run(TOKEN)
+
+if __name__ == "__main__":
+    client.run(TOKEN)
