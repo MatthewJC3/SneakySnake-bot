@@ -22,7 +22,7 @@ class Media:
         try:
             os.makedirs(self.path)
 
-        except:
+        except FileExistsError:
             pass
 
     def createDir(self, id):
@@ -167,31 +167,31 @@ async def online(msg):
 async def chess_start(cxt):
     channelid = cxt.channel.id
     try:
-        chessGameObject[channelid]
-        await cxt.channel.send("You already have a chess game in this channel!")
+        if chessGameExist[channelid]:
+            await cxt.channel.send("You already have a chess game in this channel!")
 
     except KeyError:
         chessGameExist[channelid] = True
-        chessGameObject[channelid] = chessGame()
+        chessGameObject[channelid] = chessGame(channelid)
         await cxt.channel.send("Starting up the chess game!")
         print(f"Chess game init at id {channelid}")
         chessGameObject[channelid].updateBoard()
-        await cxt.channel.send(file=discord.File("chessImages/board.png"))
+        await cxt.channel.send(file=discord.File(chessGameObject[channelid].imagePath))
 
 
 @client.command(pass_context=True)
 async def legal(ctx):
-    if chessGameExist[ctx.channel.id]:
+    try:
         moves = chessGameObject[ctx.channel.id].legalMoves()
         await ctx.channel.send(moves)
 
-    else:
+    except KeyError:
         await ctx.channel.send("Please start a chess game in this channel with !chess_start")
 
 
 @client.command(pass_context=True)
 async def move(ctx, *, playerMove):
-    if chessGameExist[ctx.channel.id]:
+    try:
         moves = chessGameObject[ctx.channel.id].legalMoves()
         if playerMove not in moves:
             await ctx.channel.send("That move is not legal!")
@@ -199,10 +199,19 @@ async def move(ctx, *, playerMove):
         else:
             chessGameObject[ctx.channel.id].makeMove(playerMove)
             chessGameObject[ctx.channel.id].updateBoard()
-            await ctx.channel.send(file=discord.File("chessImages/board.png"))
+            await ctx.channel.send(file=discord.File(chessGameObject[ctx.channel.id].imagePath))
 
-    else:
+    except KeyError:
         await ctx.channel.send("There is no game in this channel, please user !chess_start to make one!")
+
+
+@client.command(pass_context=True)
+async def show_board(ctx):
+    try:
+        await ctx.channel.send(file=discord.File(chessGameObject[ctx.channel.id].imagePath))
+
+    except KeyError:
+        await ctx.channel.send("There is no game in this channel, please use !chess_start to make one!")
 
 
 @client.command(pass_context=True)

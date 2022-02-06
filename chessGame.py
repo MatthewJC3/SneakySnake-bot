@@ -6,7 +6,8 @@ import discord
 # some of the following code is taken from the chess minimax project
 
 class chessGame:
-    def __init__(self):
+    def __init__(self, id):
+        self.imagePath = "chessImages/"+str(id)+"board.png"
         self.IMAGES = None
         self.board = chess.Board()
         self.WIDTH = 600
@@ -16,7 +17,6 @@ class chessGame:
         self.SQDI = self.WIDTH // 8
         self.screen = py.display.set_mode((self.WIDTH, self.HEIGHT))
 
-    def loadImages(self):
         # this is very inefficient, however more efficient ways seem to break it
         b = py.transform.scale(py.image.load("chessImages/b.png"), (self.SQDI, self.SQDI))
         k = py.transform.scale(py.image.load("chessImages/k.png"), (self.SQDI, self.SQDI))
@@ -67,7 +67,7 @@ class chessGame:
                         self.SQDI * j - (self.WIDTH / 8), ((self.WIDTH / 8 * 7) - self.SQDI * m)))
                     # uses i and j values to work out which piece it has, and where it should go
 
-        py.image.save(self.screen, "chessImages/board.png")
+        py.image.save(self.screen, self.imagePath)
 
     def updateBoard(self):
         count = 0
@@ -88,9 +88,9 @@ class chessGame:
                 if self.board.piece_at(int(j + m * 8 - 1)) is not None:
                     self.screen.blit(self.IMAGES[str(self.board.piece_at((j + m * 8) - 1))], (
                         self.SQDI * j - (self.WIDTH / 8), ((self.WIDTH / 8 * 7) - self.SQDI * m)))
-                    # uses i and j values to work out which piece it has, and where it should go
+                    # uses m and j values to work out which piece it has, and where it should go
 
-        py.image.save(self.screen, "chessImages/board.png")
+        py.image.save(self.screen, self.imagePath)
 
     def legalMoves(self):
         lmoves = []
@@ -103,3 +103,4 @@ class chessGame:
 
     def resetBoard(self):
         self.board = chess.Board()
+
