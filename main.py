@@ -215,11 +215,36 @@ async def show_board(ctx):
 
 
 @client.command(pass_context=True)
+async def reset_board(ctx):
+    try:
+        if chessGameExist[ctx.channel.id]:
+            chessGameObject[ctx.channel.id].resetBoard()
+            await ctx.channel.send(file=discord.File(chessGameObject[ctx.channel.id].imagePath))
+
+    except KeyError:
+        await ctx.channel.send("There is no game in this channel, please use !chess_start to make one!")
+
+
+@client.command(pass_context=True)
 async def jake(ctx, *args):
     message = ""
     for words in args:
         message = (words[0] + "-") * random.randint(1, 4) + words
     await ctx.channel.send(message)
+
+
+@client.command(pass_context=True)
+async def c_help(ctx):
+    await ctx.channel.send("```!online to check online status"
+                           "\n\n!roulette to send a roulette message to that channel"
+                           "\n\n!roulette_free to toggle the !roulette commands required channel"
+                           "\n\n!roulette_upload + an image to upload an image to the roulette"
+                           "\n\n!chess_start start a chess game in that channel"
+                           "\n\n!move (your move here) to make a move"
+                           "\n\n!legal get a list of all the legal moves"
+                           "\n\n!show_board get an image of the board"
+                           "\n\n!reset_board to reset the chess board"
+                           "\n\n!jake 'words here' to stutter words```")
 
 
 if __name__ == "__main__":
