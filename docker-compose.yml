@@ -1,0 +1,9 @@
+---
+version: "2.1"
+services:
+  discord_bot:
+    image: sneakysnake:latest
+    container_name: sneakysnake
+    environment:
+      - DISCORD_TOKEN = "OTM3Mzk2NTQ2MjUxNjczNjIx.YfbIkA.EFAHXsUWwGJvPHE98mnHe5nfGA8"
+    restart: unless-stopped

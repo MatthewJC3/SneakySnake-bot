@@ -1,6 +1,5 @@
 import pygame as py
 import chess
-import discord
 
 
 # some of the following code is taken from the chess minimax project
