@@ -1,5 +1,6 @@
 import os
 import discord
+import pygame
 from discord.ext import commands
 from dotenv import load_dotenv
 import random
@@ -9,7 +10,11 @@ import requests
 import shutil
 
 load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+ENV_TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.environ['DISCORD_TOKEN']
+print(f"os.environ token used {TOKEN}")
+
+
 client = discord.Client()
 chessGameObject = {}
 chessGameExist = {}
@@ -133,7 +138,7 @@ async def roulette(cxt):
             await cxt.channel.send("This server has no roulette images, please use !roulette_upload and an image"
                                    " within the same message to upload some!")
 
-    if not rouletteFreeSend[cxt.guild.id]:  # if cannot send anywhere
+    if not rouletteFreeSend[cxt.guild.id]:  # if it cannot send anywhere
         if cxt.channel.name == "roulette":
             images = media.fetchImage(cxt.guild.id)
             if len(images) != 0:
@@ -229,7 +234,7 @@ async def reset_board(ctx):
 async def jake(ctx, *args):
     message = ""
     for words in args:
-        message = (words[0] + "-") * random.randint(1, 4) + words
+        message = message + (words[0] + "-") * random.randint(1, 4) + words
     await ctx.channel.send(message)
 
 
@@ -248,4 +253,10 @@ async def c_help(ctx):
 
 
 if __name__ == "__main__":
-    client.run(TOKEN)
+    pygame.init()
+    print(f"using token {TOKEN}")
+    try:
+        client.run(TOKEN)
+
+    except:
+        client.runt(ENV_TOKEN)

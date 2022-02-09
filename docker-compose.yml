@@ -5,5 +5,5 @@ services:
     image: sneakysnake:latest
     container_name: sneakysnake
     environment:
-      - DISCORD_TOKEN = "OTM3Mzk2NTQ2MjUxNjczNjIx.YfbIkA.EFAHXsUWwGJvPHE98mnHe5nfGA8"
+      - DISCORD_TOKEN= yourtokenhere
     restart: unless-stopped
