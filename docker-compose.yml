@@ -7,5 +7,5 @@ services:
     volumes:
       - .:/bot
     environment:
-      - DISCORD_TOKEN=
+      - DISCORD_TOKEN= 'your token here'
     restart: unless-stopped

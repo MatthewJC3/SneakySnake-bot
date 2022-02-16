@@ -1,12 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM ubuntu:latest
-
-RUN apt-get update
-RUN apt-get install python3 -y
-RUN apt-get install python3-pip -y
-
-
+FROM python:3.8-slim-buster
 
 WORKDIR /usr/src/SneakySnake
 
@@ -18,7 +12,7 @@ COPY rouletteImages rouletteImages
 
 RUN pip3 install -r requirements.txt
 
-CMD ["python3", "./main.py"]
+CMD ["python", "./main.py"]
 
 
 
