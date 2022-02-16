@@ -13,7 +13,7 @@ load_dotenv()
 ENV_TOKEN = os.getenv("DISCORD_TOKEN")
 TOKEN = os.environ['DISCORD_TOKEN']
 print(f"os.environ token used {TOKEN}")
-
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 client = discord.Client()
 chessGameObject = {}
@@ -126,7 +126,7 @@ async def roulette(cxt):
 
     # above makes sure the server that sent the message is in the server dict
 
-    media.checkDir(cxt.guild.id)  # makes sure there is a dir for each specific server
+    media.checkDir(cxt.guild.id)  # makes sure there is a dir sfor each specific server
 
     if rouletteFreeSend[cxt.guild.id]:  # if you can use anywhere
         images = media.fetchImage(cxt.guild.id)
@@ -255,8 +255,4 @@ async def c_help(ctx):
 if __name__ == "__main__":
     pygame.init()
     print(f"using token {TOKEN}")
-    try:
-        client.run(TOKEN)
-
-    except:
-        client.runt(ENV_TOKEN)
+    client.run(TOKEN)

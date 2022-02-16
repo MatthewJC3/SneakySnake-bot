@@ -1,9 +1,11 @@
 ---
 version: "2.1"
 services:
-  discord_bot:
+  discord-bot:
     image: sneakysnake:latest
     container_name: sneakysnake
+    volumes:
+      - .:/bot
     environment:
-      - DISCORD_TOKEN= yourtokenhere
+      - DISCORD_TOKEN=
     restart: unless-stopped
