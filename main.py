@@ -237,7 +237,7 @@ async def reset_board(ctx):
 
 
 @client.command(pass_context=True)
-async def jake(ctx, *args):
+async def stutter(ctx, *args):
     message = ""
     for words in args:
         message = message + (words[0] + "-") * random.randint(1, 4) + words
