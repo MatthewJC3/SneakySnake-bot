@@ -10,10 +10,7 @@ import requests
 import shutil
 
 load_dotenv()
-ENV_TOKEN = os.getenv("DISCORD_TOKEN")
-TOKEN = os.environ['DISCORD_TOKEN']
-print(f"os.environ token used {TOKEN}")
-os.environ["SDL_VIDEODRIVER"] = "dummy"
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 client = discord.Client()
 chessGameObject = {}
@@ -250,6 +247,13 @@ async def c_help(ctx):
                            "\n\n!show_board get an image of the board"
                            "\n\n!reset_board to reset the chess board"
                            "\n\n!jake 'words here' to stutter words```")
+
+
+@client.command(pass_context=True)
+async def namibia(ctx):
+    embed = discord.Embed(title="Namibia Livestream", url="https://www.youtube.com/watch?v=ydYDqZQpim8",
+                          description="The best content on youtube")
+    await ctx.channel.send(embed=embed)
 
 
 if __name__ == "__main__":
