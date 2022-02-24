@@ -243,6 +243,12 @@ async def stutter(ctx, *args):
         message = message + (words[0] + "-") * random.randint(1, 4) + words
     await ctx.channel.send(message)
 
+@client.command(pass_context=True)
+async def namibia(ctx):
+    embed = discord.Embed(title="Namibia Livestream", url="https://www.youtube.com/watch?v=ydYDqZQpim8",
+                          description="The best content on youtube")
+    await ctx.channel.send(embed=embed)
+
 
 @client.command(pass_context=True)
 async def c_help(ctx):
@@ -255,7 +261,7 @@ async def c_help(ctx):
                            "\n\n!legal get a list of all the legal moves"
                            "\n\n!show_board get an image of the board"
                            "\n\n!reset_board to reset the chess board"
-                           "\n\n!jake 'words here' to stutter words```")
+                           "\n\n!stutter 'words here' to stutter words```")
 
 
 if __name__ == "__main__":
