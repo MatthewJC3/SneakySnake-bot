@@ -17,7 +17,56 @@ chessGameObject = {}
 chessGameExist = {}
 
 
-class Media:
+class quoteControls:
+    def __init__(self):
+        self.path = "quotes/"
+        self.safePath = "quotes"
+
+    def createFile(self, id):
+        path = self.path + str(id) + "-quotes.txt"
+        f = open(path, "w")
+        f.close()
+
+    def writeQuote(self, id, quote):
+        quote = quote.replace("!quoteUpload", '')
+        path = self.path + str(id) + "-quotes.txt"
+        f = open(path, "a")
+        f.write(quote + "\n")
+        f.close
+
+    def quoteDelete(self, id, q):
+        q = q.replace("!quoteDelete ", '')
+        path = self.path + str(id) + "-quotes.txt"
+        q = q + "\n"
+        f = open(path, "r")
+        quoteArray = []
+        lines = f.readlines()
+        for line in lines:
+            quoteArray.append(line)
+
+        quoteArray.remove(q)
+        f.close()
+        fi = open(path, "w")
+        for quote in quoteArray:
+            fi.write(quote + "\n")
+
+        fi.close()
+
+    def quoteChoose(self, id):
+        path = self.path + str(id) + "-quotes.txt"
+        quotesArray = []
+        f = open(path, "r")
+        lines = f.readlines()
+        for line in lines:
+            line = line.strip("\n")
+            quotesArray.append(line)
+
+        chosen = random.choice(quotesArray)
+        f.close()
+        return chosen
+
+
+class RouletteControls:
     def __init__(self):
         self.path = "rouletteImages/"
         self.safePath = "rouletteImages"
@@ -30,7 +79,6 @@ class Media:
     def createDir(self, id):
         imageDir = self.path + str(id) + "-rouletteImages"
         os.makedirs(imageDir)
-        print("Dir made")
 
     def checkDir(self, id):
         fileIs = False
@@ -62,10 +110,12 @@ class Media:
             shutil.copyfileobj(r.raw, destination)
 
 
-media = Media()
+media = RouletteControls()
+qClass = quoteControls()
 client = commands.Bot(command_prefix="!")
 
 rouletteFreeSend = {}
+quoteExist = {}
 
 
 @client.event
@@ -73,6 +123,44 @@ async def on_ready():
     print(f" {client.user} has successfully connected to discord")
     for guilds in client.guilds:
         print(f"Bot is connected to {guilds} ID:{guilds.id}")
+
+
+@client.command(pass_context=True)
+async def quoteUpload(cxt):
+    try:
+        quoteExist[cxt.guild.id]
+
+    except KeyError:
+        quoteExist[cxt.guild.id] = False
+
+    if quoteExist[cxt.guild.id]:
+        qu = cxt.message.content
+        qClass.writeQuote(cxt.guild.id, qu)
+
+    else:
+        qClass.createFile(cxt.guild.id)
+        quoteExist[cxt.guild.id] = True
+        qu = cxt.message.content
+        qClass.writeQuote(cxt.guild.id, qu)
+
+
+@client.command(pass_context=True)
+async def quote(cxt):
+    try:
+        quoteExist[cxt.guild.id]
+        q = qClass.quoteChoose(cxt.guild.id)
+        await cxt.channel.send(q)
+
+    except KeyError:
+        await cxt.channel.send("Upload some quotes first!")
+
+
+@client.command(pass_context=True)
+async def quoteDelete(cxt):
+    delete = cxt.message.content
+    id = cxt.guild.id
+    qClass.quoteDelete(id, delete)
+    await cxt.message.send("Quote deleted")
 
 
 @client.command(pass_context=True)
@@ -240,6 +328,10 @@ async def namibia(ctx):
     embed = discord.Embed(title="Namibia Livestream", url="https://www.youtube.com/watch?v=ydYDqZQpim8",
                           description="What mysterious animals are wandering the grand Namibia?")
     await ctx.channel.send(embed=embed)
+
+
+# @client.command(pass_context=True)
+# async def quote(ctx):
 
 
 @client.command(pass_context=True)

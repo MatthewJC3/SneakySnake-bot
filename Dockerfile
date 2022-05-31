@@ -15,6 +15,7 @@ COPY main.py .
 COPY chessGame.py .
 COPY chessImages chessImages
 COPY rouletteImages rouletteImages
+COPY quotes quotes
 
 RUN pip3 install -r requirements.txt
 
