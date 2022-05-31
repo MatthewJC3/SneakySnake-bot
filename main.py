@@ -15,6 +15,56 @@ chessGameObject = {}
 chessGameExist = {}
 client = commands.Bot(command_prefix="!")
 rouletteFreeSend = {}
+quoteExist = {}
+
+
+class quoteControls:
+    def __init__(self):
+        self.path = "quotes/"
+        self.safePath = "quotes"
+
+    def createFile(self, id):
+        path = self.path + str(id) + "-quotes.txt"
+        f = open(path, "w")
+        f.close()
+
+    def writeQuote(self, id, quote):
+        quote = quote.replace("!quoteUpload", '')
+        path = self.path + str(id) + "-quotes.txt"
+        f = open(path, "a")
+        f.write(quote + "\n")
+        f.close
+
+    def quoteDelete(self, id, q):
+        q = q.replace("!quoteDelete ", '')
+        path = self.path + str(id) + "-quotes.txt"
+        q = q + "\n"
+        f = open(path, "r")
+        quoteArray = []
+        lines = f.readlines()
+        for line in lines:
+            quoteArray.append(line)
+
+        quoteArray.remove(q)
+        f.close()
+        fi = open(path, "w")
+        for quote in quoteArray:
+            fi.write(quote + "\n")
+
+        fi.close()
+
+    def quoteChoose(self, id):
+        path = self.path + str(id) + "-quotes.txt"
+        quotesArray = []
+        f = open(path, "r")
+        lines = f.readlines()
+        for line in lines:
+            line = line.strip("\n")
+            quotesArray.append(line)
+
+        chosen = random.choice(quotesArray)
+        f.close()
+        return chosen
 
 
 class Media:  # handles creation of roulette images based on channel ID
@@ -242,6 +292,7 @@ async def stutter(ctx, *args):
     for words in args:
         message = message + (words[0] + "-") * random.randint(1, 4) + words
     await ctx.channel.send(message)
+
 
 @client.command(pass_context=True)
 async def namibia(ctx):
